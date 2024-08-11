@@ -56,8 +56,8 @@ const DetailManga = () => {
             src={listManga?.AvtTruyen ?? ImageGithub}
             rounded
             style={{
-              height: "400px",
-              width: "267px",
+              // height: "400px",
+              // width: "267px",
               objectFit: "cover",
               boxShadow: "10px 10px 5px lightblue",
             }}
