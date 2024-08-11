@@ -1,0 +1,21 @@
+GET http://localhost:8000/v1/auth/get-all-user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NmI0NTMwYWNjNzg3YTgzNjdmYzY1OGYiLCJlbWFpbCI6InR1YW5AZ21haWwuY29tIiwidXNlcm5hbWUiOiJ0dWFuIiwiaW1hZ2UiOiJodHRwczovL3N0YXRpYy52ZWN0ZWV6eS5jb20vc3lzdGVtL3Jlc291cmNlcy9wcmV2aWV3cy8wMjIvMTkxLzEzMi9ub25fMngvY29sb3JmdWwtY2F0LXdoaXRlLWJhY2tncm91bmQtZHJpcHBpbmctYXJ0LWZyZWUtcGhvdG8uanBnIiwiaWF0IjoxNzIzMTAwNzEyfQ.gmcx9zmnOpBVfgfnxJ-fOPkhMkquex4WKRZ7imz7aOo
+
+
+###########################################
+POST http://localhost:8000/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "tuan@gmail.com",
+    "password": "123"
+}
+ 
+###########################################
+POST http://localhost:8000/v1/auth/register
+Content-Type: application/json
+
+{
+    "email": "tuan123@gmail.com",
+    "password": "123"
+}
