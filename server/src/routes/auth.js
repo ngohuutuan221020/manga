@@ -3,12 +3,12 @@ const router = express.Router();
 const { register, login, getAllUser } = require("../controller/authController");
 const jsonwebtoken = require("../middleware/jsonwebtoken");
 const jwt = require("jsonwebtoken");
-router.post("/register", register);
-router.post("/login", login);
 require("dotenv").config();
 
-router.get("/get-all-user", jsonwebtoken, getAllUser);
+router.post("/register", register);
+router.post("/login", login);
 
+router.get("/get-all-user", jsonwebtoken, getAllUser);
 router.get("/get-profile", function (req, res) {
   const token = req.headers["authorization"];
   if (!token) return res.status(401).json({ EC: 1, EM: "No token provided" });

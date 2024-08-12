@@ -7,14 +7,6 @@ const {
   getChapterByIdService,
   deleteMangaByIdService,
 } = require("../services/manageService");
-const cloudinary = require("cloudinary").v2;
-require("dotenv").config();
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 async function createMangaController(req, res) {
   const { title, introduction, author, genre, status, coverImage } = req.body;
@@ -52,27 +44,13 @@ async function getAllMangaController(req, res) {
 }
 async function addChapterByIdController(req, res) {
   const chapterId = req.params.chapterId;
-  const { title, images } = req.body;
+  const { nameChapter, images } = req.body;
 
-  if (!title || !images) {
+  if (!nameChapter || !images) {
     return res.status(400).json({ EC: 1, EM: "Invalid request" });
   }
   try {
-    const imageURL = [];
-    for (const image of images) {
-      try {
-        const result = await cloudinary.uploader.upload(image, {
-          resource_type: "auto",
-        });
-        imageURL.push(result.secure_url);
-        console.error("Image upload:", result.secure_url);
-      } catch (uploadError) {
-        console.error("Image upload failed:", uploadError);
-        return res.status(500).json({ EC: 3, EM: "Image upload failed" });
-      }
-    }
-    console.log("Length >>>>> imageURL:", imageURL?.length);
-    const data = await addChapterByIdService(chapterId, title, imageURL);
+    const data = await addChapterByIdService(chapterId, nameChapter, images);
     if (!data)
       return {
         EC: 1,

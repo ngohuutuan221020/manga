@@ -5,18 +5,18 @@ import { message } from "antd";
 import Image from "react-bootstrap/Image";
 import Card from "react-bootstrap/Card";
 import ListGroup from "react-bootstrap/ListGroup";
-import ImageGithub from "../assets/github.webp";
 import Skeleton from "@mui/material/Skeleton";
 
 const DetailManga = () => {
   const { title, idManga } = useParams();
   const [listManga, setListManga] = React.useState([]);
-  console.log("🚀 ~ DetailManga ~ listManga:", listManga);
+
   const [listChapterManga, setListChapterManga] = React.useState([]);
 
   async function getListChapterMangaById(idManga) {
     try {
       const res = await getDetailMangaById(idManga);
+
       if (!res) return message.error(res.EM);
       if (res && res.EC === 0) {
         setListManga(res.DATA.Manga);
@@ -29,6 +29,13 @@ const DetailManga = () => {
       message.error(error);
     }
   }
+  const formatDate = (isoDateString) => {
+    const date = new Date(isoDateString);
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const year = date.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  };
   React.useEffect(() => {
     getListChapterMangaById(idManga);
   }, [idManga]);
@@ -55,9 +62,9 @@ const DetailManga = () => {
             maxHeight: "100%",
           }}
         >
-          {listManga?.AvtTruyen ? (
+          {listManga?.coverImage ? (
             <Image
-              src={listManga?.AvtTruyen}
+              src={listManga?.coverImage}
               rounded
               style={{
                 height: "400px",
@@ -80,28 +87,37 @@ const DetailManga = () => {
             margin: "0 1rem",
             WebkitBoxFlex: "1",
             width: "500px",
-            gap: "1rem 0",
           }}
         >
-          {listManga && listManga.AvtTruyen ? (
-            <>
-              <Card.Title>{listManga?.TenTruyen}</Card.Title>
-              <Card.Text>Giới thiệu: {listManga?.GioiThieuTruyen}</Card.Text>
-              <Card.Text>Tác giả: {listManga?.TacGia}</Card.Text>
-              <Card.Text>Thể loại: {listManga?.TheLoai}</Card.Text>
+          {listManga && listManga.coverImage ? (
+            <div className="info">
+              <Card.Title
+                className="mb-2"
+                style={{ textTransform: "uppercase", fontWeight: "700" }}
+              >
+                {listManga?.title}
+              </Card.Title>
+              <Card.Text>Giới thiệu: {listManga?.description}</Card.Text>
+              <Card.Text>Tác giả: {listManga?.author}</Card.Text>
+              <Card.Text>Thể loại: {listManga?.genre}</Card.Text>
+              <Card.Text>Star: {listManga?.star}/5 ⭐⭐⭐⭐⭐</Card.Text>
+              <Card.Text>View: {listManga?.totalView}</Card.Text>
+              <Card.Text>
+                Cập nhật: {formatDate(listManga?.updatedAt)}
+              </Card.Text>
               <Card.Text>
                 Trạng thái:{" "}
                 <a
                   style={
-                    listManga?.TrangThai === "Đang tiến hành"
+                    listManga?.status === "Đang tiến hành"
                       ? { color: "red", textTransform: "uppercase" }
                       : { color: "green", textTransform: "uppercase" }
                   }
                 >
-                  {listManga?.TrangThai}
+                  {listManga?.status}
                 </a>
               </Card.Text>
-            </>
+            </div>
           ) : (
             <>
               <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
@@ -117,22 +133,25 @@ const DetailManga = () => {
         <h3>Danh sách chương</h3>
         {!listChapterManga.length > 0 && (
           <>
-            <Skeleton variant="text" sx={{ fontSize: "3rem" }} />
-            <Skeleton variant="text" sx={{ fontSize: "3rem" }} />
-            <Skeleton variant="text" sx={{ fontSize: "3rem" }} />
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
+            <Skeleton variant="text" sx={{ fontSize: "2rem" }} />
           </>
         )}
         {listChapterManga &&
           listChapterManga.length > 0 &&
           listChapterManga.map((item, index) => {
-            const nameChapter = item.title.replace(/\s+/g, "-");
+            const name = item?.nameChapter?.replace(/\s+/g, "-");
+
             return (
               <ListGroup key={index}>
                 <ListGroup.Item
                   action
-                  href={`/${title}/${idManga}/${nameChapter}/${item._id}`}
+                  href={`/${title}/${idManga}/${name}/${item._id}`}
                 >
-                  {item.title}
+                  {item?.nameChapter}
                 </ListGroup.Item>
               </ListGroup>
             );

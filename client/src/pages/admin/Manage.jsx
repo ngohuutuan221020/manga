@@ -40,11 +40,28 @@ const Manage = () => {
   });
   const [progress, setProgress] = useState(0);
   const [base64Images, setBase64Images] = useState([]);
+
   const [nameChapter, setNameChapter] = useState("");
   const [loading, setLoading] = useState(false);
   const [compressedImage, setCompressedImage] = useState(null);
   const [listManga, setListManga] = useState([]);
   const [listChapterManga, setListChapterManga] = useState([]);
+
+  const uploadImageToCloudinary = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "professormanga");
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/dasesy1js/image/upload`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
+    const data = await response.json();
+    return data.secure_url;
+  };
 
   function titleChapter(e) {
     setNameChapter(e.target.value);
@@ -88,34 +105,60 @@ const Manage = () => {
     if (name === "coverImage" && files.length > 0) {
       setLoading(true);
       const file = files[0];
-      const options = {
-        maxSizeMB: 1,
-        useWebWorker: true,
-      };
       try {
-        const compressedFile = await imageCompression(file, options);
+        const imageUrl = await uploadImageToCloudinary(file);
 
-        const reader = new FileReader();
-        reader.readAsDataURL(compressedFile);
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          setFormData((prevData) => ({
-            ...prevData,
-            coverImage: base64data,
-          }));
-          setCompressedImage(base64data);
-          setLoading(false);
-        };
+        setFormData((prevData) => ({
+          ...prevData,
+          coverImage: imageUrl,
+        }));
+        setCompressedImage(imageUrl);
       } catch (error) {
-        console.error("Error while compressing image:", error);
+        console.error("Error uploading image:", error);
+      } finally {
         setLoading(false);
       }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
     }
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
   };
+
+  // const handleChange = async (e) => {
+  //   const { name, value, files } = e.target;
+  //   if (name === "coverImage" && files.length > 0) {
+  //     setLoading(true);
+  //     const file = files[0];
+  //     const options = {
+  //       maxSizeMB: 1,
+  //       useWebWorker: true,
+  //     };
+  //     try {
+  //       const compressedFile = await imageCompression(file, options);
+
+  //       const reader = new FileReader();
+  //       reader.readAsDataURL(compressedFile);
+  //       reader.onloadend = () => {
+  //         const base64data = reader.result;
+  //         setFormData((prevData) => ({
+  //           ...prevData,
+  //           coverImage: base64data,
+  //         }));
+  //         setCompressedImage(base64data);
+  //         setLoading(false);
+  //       };
+  //     } catch (error) {
+  //       console.error("Error while compressing image:", error);
+  //       setLoading(false);
+  //     }
+  //   }
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     [name]: value,
+  //   }));
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -143,31 +186,38 @@ const Manage = () => {
     setProgress(10);
     const files = Array.from(event.target.files);
     setProgress(30);
-    const compressedFiles = await Promise.all(
-      files.map(async (file) => {
-        const options = {
-          maxSizeMB: 1,
-          useWebWorker: true,
-        };
-        try {
-          const compressedFile = await imageCompression(file, options);
+    // const compressedFiles = await Promise.all(
+    //   files.map(async (file) => {
+    //     const options = {
+    //       maxSizeMB: 1,
+    //       useWebWorker: true,
+    //     };
+    //     try {
+    //       const compressedFile = await imageCompression(file, options);
 
-          const reader = new FileReader();
-          return new Promise((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(compressedFile);
-          });
-        } catch (error) {
-          console.error("Error while compressing image:", error);
-        }
-      })
-    );
+    //       const reader = new FileReader();
+    //       return new Promise((resolve, reject) => {
+    //         reader.onloadend = () => resolve(reader.result);
+    //         reader.onerror = reject;
+    //         reader.readAsDataURL(compressedFile);
+    //       });
+    //     } catch (error) {
+    //       console.error("Error while compressing image:", error);
+    //     }
+    //   })
+    // );
+    const imageURL = [];
+    for (const image of files) {
+      try {
+        const result = await uploadImageToCloudinary(image);
+        imageURL.push(result);
+      } catch (uploadError) {
+        console.error("Image upload failed:", uploadError);
+        message.error("Image upload failed");
+      }
+    }
     setProgress(60);
-    setBase64Images((prevBase64Images) => [
-      ...prevBase64Images,
-      ...compressedFiles,
-    ]);
+    setBase64Images((prevBase64Images) => [...prevBase64Images, ...imageURL]);
     setProgress(100);
     setLoading(false);
   };
@@ -176,7 +226,7 @@ const Manage = () => {
     setLoading(true);
     try {
       const data = {
-        title: nameChapter,
+        nameChapter: nameChapter,
         images: base64Images,
       };
 
@@ -253,19 +303,19 @@ const Manage = () => {
                     style={{ height: "300px", width: "250px" }}
                   >
                     <img
-                      src={item.AvtTruyen}
-                      alt={item.TenTruyen}
+                      src={item.coverImage}
+                      alt={item.title}
                       width="100%"
                       height="100%"
                       loading="lazy"
                     />
                     <ImageListItemBar
-                      title={item.TenTruyen}
-                      subtitle={item.TacGia}
+                      title={item.title}
+                      subtitle={item.genre}
                       actionIcon={
                         <IconButton
                           sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                          aria-label={`info about ${item.TenTruyen}`}
+                          aria-label={`info about ${item.title}`}
                         >
                           <WhatshotIcon
                             style={{
@@ -396,10 +446,9 @@ const Manage = () => {
                     return (
                       <tr key={index}>
                         <td>{item._id}</td>
-                        <td>{item.TenTruyen}</td>
-                        <td>{item.TacGia}</td>
-
-                        <td>{item.TrangThai}</td>
+                        <td>{item.title}</td>
+                        <td>{item.author}</td>
+                        <td>{item.status}</td>
                         <td>
                           <Button
                             className="mx-2"
@@ -434,12 +483,12 @@ const Manage = () => {
                           width={50}
                           height={50}
                           alt="50x50"
-                          src={item.AvtTruyen}
+                          src={item.coverImage}
                           style={{
                             marginRight: "1rem",
                           }}
                         />
-                        {item.TenTruyen}
+                        {item.title}
                       </Accordion.Header>
                       <Accordion.Body>
                         <Form.Group as={Col} className="mb-3">
@@ -497,7 +546,9 @@ const Manage = () => {
                                   className="d-flex justify-content-between align-items-start"
                                 >
                                   <div className="ms-2 me-auto">
-                                    <div className="fw-bold">{item.title}</div>
+                                    <div className="fw-bold">
+                                      {item.nameChapter}
+                                    </div>
                                     ID Manga {item.idManga}
                                   </div>
                                   <Badge bg="primary" pill>

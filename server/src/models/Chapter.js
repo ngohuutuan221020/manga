@@ -4,8 +4,9 @@ module.exports = mongoose.model(
   "chapter",
   new mongoose.Schema(
     {
-      title: {
+      nameChapter: {
         type: String,
+        required: true,
       },
       idManga: {
         type: mongoose.Schema.Types.ObjectId,

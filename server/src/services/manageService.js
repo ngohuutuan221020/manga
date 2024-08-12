@@ -11,14 +11,15 @@ async function createMangaService(
 ) {
   try {
     const newManga = await Manga.create({
-      TenTruyen: title,
-      GioiThieuTruyen: introduction,
-      TacGia: author,
-      TheLoai: genre,
-      TrangThai: status,
-      TotalView: 0,
-      TopHot: "Yes",
-      AvtTruyen: coverImage,
+      title,
+      description: introduction,
+      author,
+      genre,
+      status,
+      totalView: 0,
+      topHot: "Yes",
+      coverImage,
+      star: 5,
     });
     if (!newManga)
       return {
@@ -53,11 +54,11 @@ async function getAllMangaService() {
     return res.status(500).json({ EC: 2, EM: "Get All Manga Error" });
   }
 }
-async function addChapterByIdService(chapterId, title, imageURL) {
+async function addChapterByIdService(chapterId, nameChapter, imageURL) {
   try {
     const chapter = await Chapter.create({
+      nameChapter: nameChapter,
       idManga: chapterId,
-      title: title,
       images: imageURL,
     });
     if (!chapter)
@@ -102,9 +103,9 @@ async function getDetailMangaByIdService(id) {
     if (!manga)
       return {
         EC: 1,
-        EM: "Add manga Failed",
+        EM: "get manga Failed",
       };
-    const chapters = await Chapter.find({ idManga: id }).select("title");
+    const chapters = await Chapter.find({ idManga: id }).select("nameChapter");
 
     if (!chapters)
       return {
@@ -113,7 +114,7 @@ async function getDetailMangaByIdService(id) {
       };
     return {
       EC: 0,
-      EM: "Add manga Success",
+      EM: "Get manga Success",
       DATA: {
         Manga: manga,
         Chapters: chapters,

@@ -6,8 +6,8 @@ import ImageListItem from "@mui/material/ImageListItem";
 import IconButton from "@mui/material/IconButton";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Container from "@mui/material/Container";
-import { Empty } from "antd";
 import Skeleton from "../components/Skeleton";
+
 const Home = () => {
   const [listManga, setListManga] = useState([]);
   function handleDetailChapter(name, id) {
@@ -70,28 +70,28 @@ const Home = () => {
                     cursor: "pointer",
                     translate: "",
                   }}
-                  onClick={() => handleDetailChapter(item.TenTruyen, item._id)}
+                  onClick={() => handleDetailChapter(item.title, item._id)}
                 >
                   <img
                     style={{
                       borderRadius: "1rem",
                     }}
-                    src={item.AvtTruyen}
-                    alt={item.TenTruyen}
+                    src={item.coverImage}
+                    alt={item.title}
                     width="100%"
                     height="100%"
                     loading="lazy"
                   />
                   <ImageListItemBar
-                    title={item.TenTruyen}
-                    subtitle={item.TacGia}
+                    title={item.title}
+                    subtitle={item.author}
                     style={{
                       borderRadius: "0 0 1rem 1rem",
                     }}
                     actionIcon={
                       <IconButton
                         sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                        aria-label={`info about ${item.TenTruyen}`}
+                        aria-label={`info about ${item.title}`}
                       >
                         <WhatshotIcon
                           style={{

@@ -24,7 +24,7 @@ const registerService = async (email, password, username, image) => {
       password: hashPassword,
       username: username,
       image:
-        "https://static.vecteezy.com/system/resources/previews/022/191/132/non_2x/colorful-cat-white-background-dripping-art-free-photo.jpg",
+        "https://moderncat.com/wp-content/uploads/2015/12/Ragdoll-640x436.jpg",
       role: "USER",
     });
     if (!user) {

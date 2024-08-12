@@ -4,29 +4,32 @@ module.exports = mongoose.model(
   "manga",
   new mongoose.Schema(
     {
-      TenTruyen: {
+      title: {
         type: String,
         required: true,
       },
-      AvtTruyen: {
+      coverImage: {
         type: String,
       },
-      GioiThieuTruyen: {
+      description: {
         type: String,
       },
-      TotalView: {
+      totalView: {
         type: Number,
       },
-      TopHot: {
+      topHot: {
         type: String,
       },
-      TacGia: {
+      star: {
         type: String,
       },
-      TheLoai: {
+      author: {
+        type: String,
+      },
+      genre: {
         type: [String],
       },
-      TrangThai: {
+      status: {
         type: String,
         enum: {
           values: ["Hoàn thành", "Đang tiến hành", "Đã bỏ"],
