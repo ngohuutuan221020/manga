@@ -9,7 +9,11 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "https://professormanga.vercel.app",
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "500mb" }));
 app.use(
   bodyParser.urlencoded({
