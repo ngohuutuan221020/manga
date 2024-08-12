@@ -9,31 +9,9 @@ require("dotenv").config();
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "https://professormanga.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "Origin",
-      "X-Requested-With",
-      "Accept",
-      "x-client-key",
-      "x-client-token",
-      "x-client-secret",
-      "Authorization",
-    ],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(bodyParser.json({ limit: "500mb" }));
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-    limit: "500mb",
-    parameterLimit: 500000,
-  })
-);
+app.use(bodyParser.urlencoded({ extended: true, limit: "500mb" }));
 
 app.use("/v1/api", manage);
 app.use("/v1/auth", auth);
