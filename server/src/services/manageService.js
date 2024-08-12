@@ -127,13 +127,38 @@ async function getDetailMangaByIdService(id) {
 }
 async function getChapterByIdService(id) {
   try {
+    // Find the chapter by ID
     const chapter = await Chapter.findById(id);
-
-    if (!chapter)
+    if (!chapter) {
       return {
         EC: 1,
         EM: "Get chapter Failed",
       };
+    }
+
+    // Find the manga by ID
+    const manga = await Manga.findById(chapter.idManga);
+    if (!manga) {
+      return {
+        EC: 1,
+        EM: "Get manga Failed",
+      };
+    }
+
+    // Increment the totalView field by 1
+    const updateResult = await Manga.updateOne(
+      { _id: chapter.idManga },
+      { $inc: { totalView: 1 } }
+    );
+
+    // Check if the update was successful
+    if (updateResult.modifiedCount === 0) {
+      return {
+        EC: 1,
+        EM: "Update manga failed",
+      };
+    }
+
     return {
       EC: 0,
       EM: "Get chapter Success",
@@ -141,9 +166,13 @@ async function getChapterByIdService(id) {
     };
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ EC: 2, EM: "Get chapter Error" });
+    return {
+      EC: 2,
+      EM: "Get chapter Error",
+    };
   }
 }
+
 async function deleteMangaByIdService(id) {
   try {
     const deleteManga = await Manga.findByIdAndDelete(id);
