@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import Container from "@mui/material/Container";
 import { Empty } from "antd";
+import Skeleton from "../components/Skeleton";
 const Home = () => {
   const [listManga, setListManga] = useState([]);
   function handleDetailChapter(name, id) {
@@ -21,7 +22,6 @@ const Home = () => {
         if (!res) return message.error(res.EM);
         if (res && res.EC === 0) {
           setListManga(res.DATA);
-          message.success(res.EM);
         }
         if (res && res.EC === 1) {
           message.warning(res.EM);
@@ -62,12 +62,13 @@ const Home = () => {
             {listManga.map((item) => {
               return (
                 <ImageListItem
-                  className="ImageListItem"
+                  className="transition-transform duration-300 hover:scale-110"
                   key={item._id}
                   style={{
                     height: "300px",
                     width: "250px",
                     cursor: "pointer",
+                    translate: "",
                   }}
                   onClick={() => handleDetailChapter(item.TenTruyen, item._id)}
                 >
@@ -106,7 +107,7 @@ const Home = () => {
           </>
         ) : (
           <div style={{ margin: "0 auto" }}>
-            <Empty />
+            <Skeleton />
           </div>
         )}
       </div>

@@ -27,6 +27,8 @@ import { message } from "antd";
 import Accordion from "react-bootstrap/Accordion";
 import Figure from "react-bootstrap/Figure";
 import { addChapterById } from "../../utils/manageAPI";
+import LoadingBar from "react-top-loading-bar";
+
 const Manage = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -36,6 +38,7 @@ const Manage = () => {
     status: "Đang tiến hành",
     coverImage: null,
   });
+  const [progress, setProgress] = useState(0);
   const [base64Images, setBase64Images] = useState([]);
   const [nameChapter, setNameChapter] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,7 +57,6 @@ const Manage = () => {
       if (!res) return message.error(res.EM);
       if (res && res.EC === 0) {
         setListManga(res.DATA);
-        message.success(res.EM);
       }
       if (res && res.EC === 1) {
         message.warning(res.EM);
@@ -69,7 +71,6 @@ const Manage = () => {
       if (!res) return message.error(res.EM);
       if (res && res.EC === 0) {
         setListChapterManga(res.DATA);
-        message.success(res.EM);
       }
       if (res && res.EC === 1) {
         message.warning(res.EM);
@@ -139,8 +140,9 @@ const Manage = () => {
 
   const handleFileChange = async (event) => {
     setLoading(true);
+    setProgress(10);
     const files = Array.from(event.target.files);
-
+    setProgress(30);
     const compressedFiles = await Promise.all(
       files.map(async (file) => {
         const options = {
@@ -149,6 +151,7 @@ const Manage = () => {
         };
         try {
           const compressedFile = await imageCompression(file, options);
+
           const reader = new FileReader();
           return new Promise((resolve, reject) => {
             reader.onloadend = () => resolve(reader.result);
@@ -160,11 +163,12 @@ const Manage = () => {
         }
       })
     );
-
+    setProgress(60);
     setBase64Images((prevBase64Images) => [
       ...prevBase64Images,
       ...compressedFiles,
     ]);
+    setProgress(100);
     setLoading(false);
   };
 
@@ -214,6 +218,11 @@ const Manage = () => {
         marginBottom: "2rem",
       }}
     >
+      <LoadingBar
+        color="#f11946"
+        progress={progress}
+        onLoaderFinished={() => setProgress(0)}
+      />
       <Tabs
         defaultActiveKey="list-manga"
         id="uncontrolled-tab-example"
@@ -374,7 +383,7 @@ const Manage = () => {
             <Table striped bordered hover>
               <thead>
                 <tr>
-                  <th>#</th>
+                  <th>#ID</th>
                   <th>Tên truyện</th>
                   <th>Tác giả</th>
                   <th>Trạng thái</th>
@@ -386,7 +395,7 @@ const Manage = () => {
                   listManga.map((item, index) => {
                     return (
                       <tr key={index}>
-                        <td>{index + 1}</td>
+                        <td>{item._id}</td>
                         <td>{item.TenTruyen}</td>
                         <td>{item.TacGia}</td>
 
