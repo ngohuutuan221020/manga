@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { getChapterById, getChapterByIdManga } from "../utils/manageAPI";
 import { Button, message } from "antd";
 import Breadcrumb from "react-bootstrap/Breadcrumb";
-
+import { LazyLoadImage } from "react-lazy-load-image-component";
 const DetailChapter = () => {
   const { title, idManga, chapter, idChapter } = useParams();
 
@@ -110,12 +110,12 @@ const DetailChapter = () => {
         listChapterManga?.images?.length > 0 &&
         listChapterManga?.images?.map((item, index) => {
           return (
-            <img
+            <LazyLoadImage
               key={index}
               alt={item}
+              width={"100%"}
+              height={"auto"}
               src={item}
-              loading="lazy"
-              style={{ width: "100%", height: "auto" }}
             />
           );
         })}
