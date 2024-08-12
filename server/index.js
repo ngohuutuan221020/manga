@@ -11,7 +11,13 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json({ limit: "500mb" }));
-app.use(bodyParser.urlencoded({ extended: true, limit: "500mb" }));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: "500mb",
+    parameterLimit: 500000,
+  })
+);
 
 app.use("/v1/api", manage);
 app.use("/v1/auth", auth);
