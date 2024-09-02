@@ -38,6 +38,7 @@ const Manage = () => {
     status: "Đang tiến hành",
     coverImage: null,
   });
+  console.log("🚀 ~ Manage ~ coverImage:", formData.coverImage);
   const [progress, setProgress] = useState(0);
   const [base64Images, setBase64Images] = useState([]);
 
@@ -53,7 +54,7 @@ const Manage = () => {
     formData.append("upload_preset", "professormanga");
 
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/dasesy1js/image/upload`,
+      `https://api.cloudinary.com/v1_1/dxys0l108/image/upload`,
       {
         method: "POST",
         body: formData,
@@ -105,8 +106,10 @@ const Manage = () => {
     if (name === "coverImage" && files.length > 0) {
       setLoading(true);
       const file = files[0];
+      console.log("🚀 ~ handleChange ~ file:", file);
       try {
         const imageUrl = await uploadImageToCloudinary(file);
+        console.log("🚀 ~ handleChange ~ imageUrl:", imageUrl);
 
         setFormData((prevData) => ({
           ...prevData,
